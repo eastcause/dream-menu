@@ -34,4 +34,3 @@ maven { url "https://repo.dreamcode.cc/releases" }
 ```gradle
 implementation "cc.dreamcode.menu:core:1.3.6"
 ```
-

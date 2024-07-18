@@ -1,5 +1,6 @@
 package cc.dreamcode.menu;
 
+import cc.dreamcode.menu.item.ItemSlot;
 import cc.dreamcode.menu.utilities.MenuUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Getter
@@ -19,6 +21,15 @@ public abstract class DreamMenuBuilder<B, T, I> {
     private final String name;
     private final int rows;
     private Map<Integer, I> items = new HashMap<>();
+    private I background = null;
+    private Map<String, ItemSlot<I>> defaultItems = new HashMap<>();
+
+    public DreamMenuBuilder(T inventoryType, String name, int rows, Map<Integer, I> items) {
+        this.inventoryType = inventoryType;
+        this.name = name;
+        this.rows = rows;
+        this.items = items;
+    }
 
     public DreamMenuBuilder<B, T, I> setItem(int x, int z, @NonNull I i) {
         this.items.put(MenuUtil.countSlot(x, z), i);
@@ -103,6 +114,22 @@ public abstract class DreamMenuBuilder<B, T, I> {
         }
 
         return this;
+    }
+
+    public DreamMenuBuilder<B, T, I> setBackgrounds(@NonNull I i) {
+        this.background = i;
+
+        return this;
+    }
+
+    public DreamMenuBuilder<B, T, I> addDefaultItem(@NonNull String key, int slot, @NonNull I i) {
+        this.defaultItems.put(key, new ItemSlot<>(slot, i));
+
+        return this;
+    }
+
+    public Optional<ItemSlot<I>> getDefaultItemSlot(@NonNull String key) {
+        return Optional.ofNullable(this.defaultItems.get(key));
     }
 
     public abstract B buildEmpty();

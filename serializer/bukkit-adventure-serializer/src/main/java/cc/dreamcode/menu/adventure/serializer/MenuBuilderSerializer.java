@@ -1,5 +1,6 @@
 package cc.dreamcode.menu.adventure.serializer;
 
+import cc.dreamcode.menu.item.ItemSlot;
 import cc.dreamcode.menu.adventure.BukkitMenuBuilder;
 import eu.okaeri.configs.schema.GenericsDeclaration;
 import eu.okaeri.configs.serdes.DeserializationData;
@@ -8,6 +9,8 @@ import eu.okaeri.configs.serdes.SerializationData;
 import lombok.NonNull;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
 
 public class MenuBuilderSerializer implements ObjectSerializer<BukkitMenuBuilder> {
     /**
@@ -37,6 +40,14 @@ public class MenuBuilderSerializer implements ObjectSerializer<BukkitMenuBuilder
         }
 
         data.addAsMap("items", object.getItems(), Integer.class, ItemStack.class);
+
+        if (object.getBackground() != null) {
+            data.add("background", object.getBackground());
+        }
+
+        if (object.getDefaultItems() != null && !object.getDefaultItems().isEmpty()) {
+            data.add("defaultItems", object.getDefaultItems());
+        }
     }
 
     /**
@@ -50,14 +61,26 @@ public class MenuBuilderSerializer implements ObjectSerializer<BukkitMenuBuilder
             return new BukkitMenuBuilder(
                     data.get("type", InventoryType.class),
                     data.get("name", String.class),
-                    data.getAsMap("items", Integer.class, ItemStack.class)
+                    data.getAsMap("items", Integer.class, ItemStack.class),
+                    data.containsKey("background")
+                            ? data.get("background", ItemStack.class)
+                            : null,
+                    data.containsKey("defaultItems")
+                            ? data.getAsMap("defaultItems", String.class, (Class<ItemSlot<ItemStack>>)(Class<?>)ItemSlot.class)
+                            : new HashMap<>()
             );
         }
 
         return new BukkitMenuBuilder(
                 data.get("name", String.class),
                 data.get("rows", Integer.class),
-                data.getAsMap("items", Integer.class, ItemStack.class)
+                data.getAsMap("items", Integer.class, ItemStack.class),
+                data.containsKey("background")
+                        ? data.get("background", ItemStack.class)
+                        : null,
+                data.containsKey("defaultItems")
+                        ? data.getAsMap("defaultItems", String.class, (Class<ItemSlot<ItemStack>>)(Class<?>)ItemSlot.class)
+                        : new HashMap<>()
         );
     }
 }

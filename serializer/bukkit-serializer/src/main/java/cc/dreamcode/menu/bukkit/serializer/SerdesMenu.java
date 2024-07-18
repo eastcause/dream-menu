@@ -8,5 +8,6 @@ public class SerdesMenu implements OkaeriSerdesPack {
     @Override
     public void register(@NonNull SerdesRegistry registry) {
         registry.register(new MenuBuilderSerializer());
+        registry.register(new ItemSlotSerializer());
     }
 }

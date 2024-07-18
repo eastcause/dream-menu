@@ -1,7 +1,8 @@
 package cc.dreamcode.menu.adventure;
 
-import cc.dreamcode.menu.adventure.base.BukkitMenu;
 import cc.dreamcode.menu.DreamMenuBuilder;
+import cc.dreamcode.menu.adventure.base.BukkitMenu;
+import cc.dreamcode.menu.item.ItemSlot;
 import cc.dreamcode.utilities.bukkit.builder.ItemBuilder;
 import lombok.NonNull;
 import org.bukkit.event.inventory.InventoryType;
@@ -9,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class BukkitMenuBuilder extends DreamMenuBuilder<BukkitMenu, InventoryType, ItemStack> {
 
@@ -16,8 +18,18 @@ public class BukkitMenuBuilder extends DreamMenuBuilder<BukkitMenu, InventoryTyp
         super(InventoryType.CHEST, name, rows, items == null ? new HashMap<>() : items);
     }
 
+    public BukkitMenuBuilder(@NonNull String name, int rows, Map<Integer, ItemStack> items,
+                             ItemStack background, @NonNull Map<String, ItemSlot<ItemStack>> defaultItems) {
+        super(InventoryType.CHEST, name, rows, items == null ? new HashMap<>() : items, background, defaultItems);
+    }
+
     public BukkitMenuBuilder(@NonNull InventoryType inventoryType, @NonNull String name, Map<Integer, ItemStack> items) {
         super(inventoryType, name, inventoryType.getDefaultSize(), items == null ? new HashMap<>() : items);
+    }
+
+    public BukkitMenuBuilder(@NonNull InventoryType inventoryType, @NonNull String name, Map<Integer, ItemStack> items,
+                             ItemStack background, @NonNull Map<String, ItemSlot<ItemStack>> defaultItems) {
+        super(inventoryType, name, inventoryType.getDefaultSize(), items == null ? new HashMap<>() : items, background, defaultItems);
     }
 
     @Override
@@ -42,8 +54,21 @@ public class BukkitMenuBuilder extends DreamMenuBuilder<BukkitMenu, InventoryTyp
     public BukkitMenu buildWithItems() {
         final BukkitMenu bukkitMenu = this.buildEmpty();
 
+        if (this.getBackground() != null) {
+            for (int i = 0; i < bukkitMenu.getSize(); i++) {
+                bukkitMenu.setItem(i, ItemBuilder.of(this.getBackground())
+                        .fixColors()
+                        .toItemStack());
+            }
+        }
+
         this.getItems().forEach((slot, item) ->
                 bukkitMenu.setItem(slot, ItemBuilder.of(item)
+                        .fixColors()
+                        .toItemStack()));
+
+        this.getDefaultItems().forEach((key, itemSlot) ->
+                bukkitMenu.setItem(itemSlot.getSlot(), ItemBuilder.of(itemSlot.getI())
                         .fixColors()
                         .toItemStack()));
 
@@ -54,8 +79,21 @@ public class BukkitMenuBuilder extends DreamMenuBuilder<BukkitMenu, InventoryTyp
     public BukkitMenu buildWithItems(@NonNull Map<String, Object> replaceMap) {
         final BukkitMenu bukkitMenu = this.buildEmpty(replaceMap);
 
+        if (this.getBackground() != null) {
+            for (int i = 0; i < bukkitMenu.getSize(); i++) {
+                bukkitMenu.setItem(i, ItemBuilder.of(this.getBackground())
+                        .fixColors(replaceMap)
+                        .toItemStack());
+            }
+        }
+
         this.getItems().forEach((slot, item) ->
                 bukkitMenu.setItem(slot, ItemBuilder.of(item)
+                        .fixColors(replaceMap)
+                        .toItemStack()));
+
+        this.getDefaultItems().forEach((key, itemSlot) ->
+                bukkitMenu.setItem(itemSlot.getSlot(), ItemBuilder.of(itemSlot.getI())
                         .fixColors(replaceMap)
                         .toItemStack()));
 
