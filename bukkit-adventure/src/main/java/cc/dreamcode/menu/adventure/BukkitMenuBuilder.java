@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 public class BukkitMenuBuilder extends DreamMenuBuilder<BukkitMenu, InventoryType, ItemStack> {
 
@@ -55,11 +56,12 @@ public class BukkitMenuBuilder extends DreamMenuBuilder<BukkitMenu, InventoryTyp
         final BukkitMenu bukkitMenu = this.buildEmpty();
 
         if (this.getBackground() != null) {
-            for (int i = 0; i < bukkitMenu.getSize(); i++) {
-                bukkitMenu.setItem(i, ItemBuilder.of(this.getBackground())
-                        .fixColors()
-                        .toItemStack());
-            }
+            ItemStack background = ItemBuilder.of(this.getBackground())
+                    .fixColors()
+                    .toItemStack();
+
+            IntStream.range(0, (bukkitMenu.getSize() - 1))
+                    .forEach(i -> bukkitMenu.setItem(i, background));
         }
 
         this.getItems().forEach((slot, item) ->
@@ -80,11 +82,12 @@ public class BukkitMenuBuilder extends DreamMenuBuilder<BukkitMenu, InventoryTyp
         final BukkitMenu bukkitMenu = this.buildEmpty(replaceMap);
 
         if (this.getBackground() != null) {
-            for (int i = 0; i < bukkitMenu.getSize(); i++) {
-                bukkitMenu.setItem(i, ItemBuilder.of(this.getBackground())
-                        .fixColors(replaceMap)
-                        .toItemStack());
-            }
+            ItemStack background = ItemBuilder.of(this.getBackground())
+                    .fixColors()
+                    .toItemStack();
+
+            IntStream.range(0, (bukkitMenu.getSize() - 1))
+                    .forEach(i -> bukkitMenu.setItem(i, background));
         }
 
         this.getItems().forEach((slot, item) ->

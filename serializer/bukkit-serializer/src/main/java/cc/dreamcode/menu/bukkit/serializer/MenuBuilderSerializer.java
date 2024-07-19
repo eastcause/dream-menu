@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class MenuBuilderSerializer implements ObjectSerializer<BukkitMenuBuilder> {
     /**
@@ -57,30 +58,31 @@ public class MenuBuilderSerializer implements ObjectSerializer<BukkitMenuBuilder
      */
     @Override
     public BukkitMenuBuilder deserialize(@NonNull DeserializationData data, @NonNull GenericsDeclaration generics) {
+        String name = data.get("name", String.class);
+        Map<Integer, ItemStack> items = data.getAsMap("items", Integer.class, ItemStack.class);
+        ItemStack background = data.containsKey("background")
+                ? data.get("background", ItemStack.class)
+                : null;
+        Map<String, ItemSlot<ItemStack>> defaultItems = data.containsKey("defaultItems")
+                ? data.getAsMap("defaultItems", String.class, (Class<ItemSlot<ItemStack>>)(Class<?>)ItemSlot.class)
+                : new HashMap<>();
+
         if (data.containsKey("type")) {
             return new BukkitMenuBuilder(
                     data.get("type", InventoryType.class),
-                    data.get("name", String.class),
-                    data.getAsMap("items", Integer.class, ItemStack.class),
-                    data.containsKey("background")
-                            ? data.get("background", ItemStack.class)
-                            : null,
-                    data.containsKey("defaultItems")
-                            ? data.getAsMap("defaultItems", String.class, (Class<ItemSlot<ItemStack>>)(Class<?>)ItemSlot.class)
-                            : new HashMap<>()
+                    name,
+                    items,
+                    background,
+                    defaultItems
             );
         }
 
         return new BukkitMenuBuilder(
-                data.get("name", String.class),
+                name,
                 data.get("rows", Integer.class),
-                data.getAsMap("items", Integer.class, ItemStack.class),
-                data.containsKey("background")
-                        ? data.get("background", ItemStack.class)
-                        : null,
-                data.containsKey("defaultItems")
-                        ? data.getAsMap("defaultItems", String.class, (Class<ItemSlot<ItemStack>>)(Class<?>)ItemSlot.class)
-                        : new HashMap<>()
+                items,
+                background,
+                defaultItems
         );
     }
 }
